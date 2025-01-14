@@ -19,6 +19,7 @@
 
 <div align="center">
 	<img src="https://github.com/user-attachments/assets/c7670138-73e7-4ee0-813c-149f6e2d898b">
+	<font size="-1" color="grey"><br>Click <a href="https://www.youtube.com/playlist?list=PLdwIq7AG9mogPQiJf38YqiDdd9H0BcvOV">here</a> to see the development video playlist<br></font>
 </div>
 
 ## Installation
