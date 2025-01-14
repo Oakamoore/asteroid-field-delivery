@@ -40,61 +40,52 @@ public class ShipPower : MonoBehaviour
     {
         elapsed += Time.deltaTime;
 
-        //Runs a check every second - 1 unit of power is lost every second if the some of the conditions below are true
+        bool isShipMoving = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+
+        const int defaultPowerLoss = 0.5f;
+        const int collisionPowerLoss = 3.0f;
+        const int maxPowerLoss = 3.5f;
+        const int maxAttachmentPowerLoss = 1.5f;
+        const int modifier = 0.3f;
+
+        //Runs a check every second 
         if (elapsed >= 1f)
         {
             //If the ship is moving 
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            if (isShipMoving)
             {
-                losePower(0.5f);
-            }
-
-            //If the ship is moving and is carrying the first boulder
-            if(sdScript.boulderOneAttached && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
-            {
-                losePower(1.5f);
-            }
-
-            //If the ship is moving and is carrying the second boulder
-            if (sdScript.boulderTwoAttached && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
-            {
-                losePower(1f);
-            }
-
-            //If the ship is moving and is carrying the third boulder
-            if (sdScript.boulderThreeAttached && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
-            {
-                losePower(0.7f);
-            }
-
-            //If the ship collides with any obstacles when it's not moving, it loses power
-            if(collisions.hasCollided == true)
-            {
-                losePower(3);
+                losePower(defaultPowerLoss);
             }
 
             //If the ship collides with any obstacles it loses power
-            if (collisions.hasCollided == true && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
+            else if(collisions.hasCollided == true)
             {
-                losePower(3);
+                losePower(collisionPowerLoss);
+            }
+
+            //If the ship is moving and is carrying the first boulder
+            else if(sdScript.boulderOneAttached && isShipMoving)
+            {
+                losePower(maxAttachmentPowerLoss);
+            }
+
+            //If the ship is moving and is carrying the second boulder
+            else if (sdScript.boulderTwoAttached && isShipMoving)
+            {
+                losePower(maxAttachmentPowerLoss - modifier);
+            }
+
+            //If the ship is moving and is carrying the third boulder
+            else if (sdScript.boulderThreeAttached && isShipMoving)
+            {
+                losePower(maxAttachmentPowerLoss - (modifier * 2));
             }
 
             //If the ship collides with any obstacles while carrying a boulder it loses power
-            if (sdScript.boulderOneAttached && collisions.hasCollided == true && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
+            else if ((sdScript.boulderOneAttached || sdScript.boulderTwoAttached || sdScript.boulderThreeAttached) &&
+                 collisions.hasCollided == true && isShipMoving)
             {
-                losePower(3.5f);
-            }
-
-            //If the ship collides with any obstacles while carrying a boulder it loses power
-            if (sdScript.boulderTwoAttached && collisions.hasCollided == true && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
-            {
-                losePower(3.5f);
-            }
-
-            //If the ship collides with any obstacles while carrying a boulder it loses power
-            if (sdScript.boulderThreeAttached && collisions.hasCollided == true && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
-            {
-                losePower(3.5f);
+                losePower(maxPowerLoss);
             }
 
             elapsed = elapsed % 1f;
